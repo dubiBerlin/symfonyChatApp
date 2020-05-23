@@ -17,6 +17,16 @@ class Participant
      */
     private $id;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="participants")
+     */
+    private $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Conversation", inversedBy="participants")
+     */
+    private $conversation;
+
     public function getId(): ?int
     {
         return $this->id;
