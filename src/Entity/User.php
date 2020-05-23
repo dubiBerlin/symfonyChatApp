@@ -42,9 +42,6 @@ class User implements UserInterface
      */
     private $messages;
 
-
-
-
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
