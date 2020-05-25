@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
 use App\Repository\ConversationRepository;
+use App\Entity\Participant;
+use App\Entity\Conversation;
+use App\Entity\User;
 
 
 /**
@@ -35,15 +38,15 @@ class ConversationController extends AbstractController
     }
 
     /**
-     * @Route("/", name="getConversation")
+     * @Route("/{id}", name="getConversation")
      * @param Request $request#
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request, int $id)
     {
         $otherUser = $request->get("otherUser");
-        $otherUser = $this->userRepository->find($otherUser);
-
+        $otherUser = $this->userRepository->find($id);
+      
         if (is_null($otherUser)) {
           throw new \Exception("The user was not found");
         }
@@ -59,6 +62,21 @@ class ConversationController extends AbstractController
           $this->getUser()->getId()
         );
 
+        if (count($conversation)) {
+          throw new \Exception("The conversation already exists");
+        }
+        $conversation = new Conversation(); 
+
+        $participant = new Participant();
+        $participant->setUser($this->getUser());
+        $participant->setConversation($conversation);
+
+        
+        $otherParticipant = new Participant();
+        $otherParticipant->setUser($otherUser);
+        $otherParticipant->setConversation($conversation);
+        
+        dd($conversation);
         return $this->json();
     }
 }
