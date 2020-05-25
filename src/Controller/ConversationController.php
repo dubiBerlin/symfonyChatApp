@@ -75,8 +75,21 @@ class ConversationController extends AbstractController
         $otherParticipant = new Participant();
         $otherParticipant->setUser($otherUser);
         $otherParticipant->setConversation($conversation);
+
+        $this->entityManager->getConnection()->beginTransaction();
+        try {
+          $this->entityManager->persist($conversation);
+          $this->entityManager->persist($participant);
+          $this->entityManager->persist($otherParticipant);
+          $this->entityManager->flush();
+          $this->entityManager->commit();
+        } catch (\Exception $e) {
+          $this->entityManager->rollback();
+          throw $e;
+        }
         
-        dd($conversation);
-        return $this->json();
+        return $this->json([
+          "id" => $conversation->getId()
+        ], Response::HTTP_CREATED,[],[]);
     }
 }
