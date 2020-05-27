@@ -37,6 +37,16 @@ class ConversationController extends AbstractController
       $this->conversationRepository = $conversationRepository;
     }
 
+      /**
+     * @Route("/test", name="test")
+     * @param Request $request#
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function test(Request $request, Conversation $conversation)
+    {
+      return new Response("Test");
+    }
+
     /**
      * @Route("/", name="newConversations", methods={"POST"})
      * @param Request $request#

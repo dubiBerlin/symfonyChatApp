@@ -12,15 +12,13 @@ use App\Repository\ConversationRepository;
 use App\Entity\Participant;
 use App\Entity\Conversation;
 use App\Entity\User;
-
-
  /**
-  * @Route("/message", name="message")
+  * @Route("/messages", name="messages.")
   */
-class MessageController extends AbstractController
-{
+class MessageController extends AbstractController {
+  
     /**
-     * @Route("/{id}", name="getMessages")
+     * @Route("/{id}", name="getMessages", methods={"GET"})
      * @param Request request
      * @param Conversation $conversation
      * @return Response
