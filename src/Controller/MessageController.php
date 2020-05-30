@@ -21,6 +21,16 @@ use Symfony\Component\Serializer\SerializerInterface;
   * @Route("/messages", name="messages.")
   */
 class MessageController extends AbstractController {
+
+    private $messageRepository;
+    
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager, MessageRepository $messageRepository) 
+    {
+      $this->entityManager = $entityManager;
+      $this->messageRepository = $messageRepository;
+    } 
   
     /**
      * @Route("/{id}", name="getMessages", methods={"GET"})
@@ -32,8 +42,9 @@ class MessageController extends AbstractController {
     {
         $this->denyAccessUnlessGranted("view", $conversation);
 
-        $messages = $conversation->getMessages();
+        $messages = $this->messageRepository->findMessagesByConversationId($conversation->getId());
 
+        dd($messages);
 
         return $this->render('message/index.html.twig', [
             'controller_name' => 'MessageController',
