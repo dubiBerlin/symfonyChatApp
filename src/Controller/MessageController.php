@@ -31,6 +31,10 @@ class MessageController extends AbstractController {
     public function index(Request $request, Conversation $conversation)
     {
         $this->denyAccessUnlessGranted("view", $conversation);
+
+        $messages = $conversation->getMessages();
+
+
         return $this->render('message/index.html.twig', [
             'controller_name' => 'MessageController',
         ]);
