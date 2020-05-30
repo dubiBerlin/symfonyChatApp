@@ -12,11 +12,11 @@ class ConversationVoter extends Voter {
   const VIEW = "view";
 
   protected function supports( string $attribute, $subject) {
-    dd($attribute, $subject);
+   return $attribute == self::VIEW && $subject instanceof Conversation;
   }
 
   protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token) {
-
+    dd($attribute, $subject, $token);
   }
 
 
