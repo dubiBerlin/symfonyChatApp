@@ -15,8 +15,6 @@ class Message
 {
     use Timestamp;
 
-
-
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -33,6 +31,8 @@ class Message
      * @ORM\ManyToOne(targetEntity="User", inversedBy="messages")
      */
     private $user;
+
+    private $mine;
 
     /**
      * @ORM\ManyToOne(targetEntity="Conversation", inversedBy="messages")
@@ -79,5 +79,17 @@ class Message
         $this->conversation = $conversation;
 
         return $this;
+    }
+
+    public function setMine($mine): self
+    {
+       $this->mine = $mine;
+
+        return $this;
+    }
+
+    public function getMine()
+    {
+        return $this->mine;
     }
 }

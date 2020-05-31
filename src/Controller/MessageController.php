@@ -44,10 +44,18 @@ class MessageController extends AbstractController {
 
         $messages = $this->messageRepository->findMessagesByConversationId($conversation->getId());
 
-        dd($messages);
+        // dd($messages);
 
-        return $this->render('message/index.html.twig', [
-            'controller_name' => 'MessageController',
+        array_map(function ($message) {
+          $message->setMine($message->getUser()->getId() === $this->getUser()->getId() ? true : false);
+        }, $messages);
+
+        // return $this->render('message/index.html.twig', [
+        //     'controller_name' => 'MessageController',
+        // ]);
+
+        return $this->json($messages, Response::HTTP_OK, [] , [
+          "attributes" => self::ATTRIBUTES_TO_SERIALIZE
         ]);
     }
 }
