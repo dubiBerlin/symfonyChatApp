@@ -36,10 +36,10 @@ class MessageController extends AbstractController {
     } 
   
     /**
-     * @Route("/{id}", name="getMessages")
+     * @Route("/{id}", name="getMessages", methods={"POST"})
      * @param Request request
      * @param Conversation $conversation
-     * @return Response
+     * @return JsonResponse
      */
     public function index(Request $request, Conversation $conversation)
     {
@@ -63,4 +63,44 @@ class MessageController extends AbstractController {
           "attributes" => self::ATTRIBUTES_TO_SERIALIZE
         ]);
     }
+
+    
+    /**
+     * @Route("/{id}", name="newMessage", methods={"POST"})
+     * @param Request request
+     * @param Conversation $conversation
+     * @return JsonResponse
+     */
+    public function newMessage(Request $request, Conversation $conversation)
+    {
+
+      $user = $this->getUser();
+      // $this->denyAccessUnlessGranted("view", $conversation);
+      $content = $request->get("content", null);
+
+      $message = new Message();
+      $message->setContent($conversation);
+      $message->setUser($user);
+      $message->setMine(true);
+
+      $conversation->addMessage($message);
+      $conversation->setLastMessage($message);
+
+      $this->entityManager->getConnection()->beginTransaction();
+      try{
+        $this->entityManager->persist($message);
+        $this->entityManager->persist($conversation);
+        $this->entityManager->flush();
+        $this->entityManager->commit();
+      } catch(Exception $e) {
+        $this->entityManager->rollback();
+      }
+
+
+      return $this->json($messages, Response::HTTP_CREATED, [] , [
+        "attributes" => self::ATTRIBUTES_TO_SERIALIZE
+      ]);
+    }
+
+
 }
