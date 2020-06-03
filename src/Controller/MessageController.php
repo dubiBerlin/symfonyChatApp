@@ -22,6 +22,9 @@ use Symfony\Component\Serializer\SerializerInterface;
   */
 class MessageController extends AbstractController {
 
+
+    const ATTRIBUTES_TO_SERIALIZE = ["id", "content", "createdAt", "mine"];
+
     private $messageRepository;
     
     private $entityManager;
@@ -33,7 +36,7 @@ class MessageController extends AbstractController {
     } 
   
     /**
-     * @Route("/{id}", name="getMessages", methods={"GET"})
+     * @Route("/{id}", name="getMessages")
      * @param Request request
      * @param Conversation $conversation
      * @return Response
@@ -45,10 +48,12 @@ class MessageController extends AbstractController {
         $messages = $this->messageRepository->findMessagesByConversationId($conversation->getId());
 
         // dd($messages);
-
-        array_map(function ($message) {
+        if (!is_null($messages)) {
+          array_map(function ($message) {
           $message->setMine($message->getUser()->getId() === $this->getUser()->getId() ? true : false);
         }, $messages);
+        }
+        
 
         // return $this->render('message/index.html.twig', [
         //     'controller_name' => 'MessageController',
