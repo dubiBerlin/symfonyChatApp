@@ -19,6 +19,22 @@ class ParticipantRepository extends ServiceEntityRepository
         parent::__construct($registry, Participant::class);
     }
 
+
+    public function findParticipantByConversationIdAndUser(int $conversationId, int $userId ) {
+      $qp = $this->createQueryBuilder('p');
+      $qb->where(
+        $qb->expr()->andX(
+          $qb->expr()->eq("p.conversation", ":conversationId"),
+          $qb->expr()->eq("p.user", ":userId")
+        )
+        )
+        ->setParameter([
+          "conversationId" => $conversationId,
+          "userId" => $userId
+        ]);
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
     // /**
     //  * @return Participant[] Returns an array of Participant objects
     //  */

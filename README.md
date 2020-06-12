@@ -1,0 +1,2 @@
+start mercure server command:
+$env:JWT_KEY='mysecret'; $env:ADDR='localhost:3000'; $env:DEMO='1'; $env:ALLOW_ANONYMOUS='1'; $env:CORS_ALLOWED_ORIGINS='localhost:8000'; $env:PUBLISH_ALLOWED_ORIGINS='http://localhost:3000'; .\mercure.exe

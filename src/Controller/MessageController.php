@@ -29,10 +29,13 @@ class MessageController extends AbstractController {
     
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, MessageRepository $messageRepository) 
+    private $participantRepository;
+
+    public function __construct(EntityManagerInterface $entityManager, MessageRepository $messageRepository, ParticipantRepository $participantRepository) 
     {
       $this->entityManager = $entityManager;
       $this->messageRepository = $messageRepository;
+      $this->participantRepository = $participantRepository;
     } 
   
     /**
@@ -71,8 +74,12 @@ class MessageController extends AbstractController {
      * @param Conversation $conversation
      * @return JsonResponse
      */
-    public function newMessage(Request $request, Conversation $conversation)
+    public function newMessage(Request $request, Conversation $conversation, SerializerInterface $serializer)
     {
+      $recipient = $this->participantRepository->findParticipantByConversationIdAndUser(
+        $conversation->getId(),
+        $this->getUser()->getId()
+      );
 
       $user = $this->getUser();
       // $this->denyAccessUnlessGranted("view", $conversation);
@@ -81,7 +88,7 @@ class MessageController extends AbstractController {
       $message = new Message();
       $message->setContent($conversation);
       $message->setUser($user);
-      $message->setMine(true);
+      $message->setMine(false);
 
       $conversation->addMessage($message);
       $conversation->setLastMessage($message);
@@ -94,8 +101,25 @@ class MessageController extends AbstractController {
         $this->entityManager->commit();
       } catch(Exception $e) {
         $this->entityManager->rollback();
+        throw $e;
       }
 
+      $message->setMine(false);
+      $messageSerialized = serializer($message, "json" , [
+        "attributes" => ["id", "content", "createdAt", "mine", "conversation" => ["id"]]
+      ]);
+      $update = new Update(
+        [
+          sprintf("/conversations/%s", $conversation->getId()),
+          sprintf("/conversations/%s", $recipient->getUser()->getUsername())
+        ],
+        $messageSerialized, // data
+        [
+          $recipient->getUser()->getUsername()
+        ]
+      ); 
+
+      $message->setMine(true);
 
       return $this->json($messages, Response::HTTP_CREATED, [] , [
         "attributes" => self::ATTRIBUTES_TO_SERIALIZE
