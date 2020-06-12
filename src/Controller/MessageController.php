@@ -31,11 +31,14 @@ class MessageController extends AbstractController {
 
     private $participantRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, MessageRepository $messageRepository, ParticipantRepository $participantRepository) 
+    private $publisher;
+
+    public function __construct(EntityManagerInterface $entityManager, MessageRepository $messageRepository, ParticipantRepository $participantRepository, PublisherInterface $publisher) 
     {
       $this->entityManager = $entityManager;
       $this->messageRepository = $messageRepository;
       $this->participantRepository = $participantRepository;
+      $this->publisher = $publisher;
     } 
   
     /**
@@ -118,6 +121,8 @@ class MessageController extends AbstractController {
           $recipient->getUser()->getUsername()
         ]
       ); 
+
+      $this->publisher->__invoke($update);
 
       $message->setMine(true);
 
